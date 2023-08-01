@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_shakemywidget/flutter_shakemywidget.dart';
 import 'package:provider/provider.dart';
 import 'package:tockto_assignment/models/quiz_data.dart';
 
@@ -53,13 +54,24 @@ class QuizCard extends StatelessWidget {
             List<dynamic> data = snapshot.data!;
             context.read<QuizData>().addQuiz(data);
 
-            return const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                QuizQuestion(),
-                SizedBox(height: 48.0),
-                QuizChoice(),
-              ],
+            GlobalKey<ShakeWidgetState> shakeKey =
+                GlobalKey<ShakeWidgetState>();
+
+            return ShakeMe(
+              key: shakeKey,
+              shakeCount: 3,
+              shakeOffset: 10,
+              shakeDuration: const Duration(milliseconds: 500),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const QuizQuestion(),
+                  const SizedBox(height: 48.0),
+                  QuizChoice(
+                    shakeKey: shakeKey,
+                  ),
+                ],
+              ),
             );
           } on Exception catch (_) {
             // print(e);
@@ -164,8 +176,11 @@ class QuizQuestion extends StatelessWidget {
 }
 
 class QuizChoice extends StatelessWidget {
+  final GlobalKey<ShakeWidgetState> shakeKey;
+
   const QuizChoice({
     super.key,
+    required this.shakeKey,
   });
 
   @override
@@ -198,7 +213,12 @@ class QuizChoice extends StatelessWidget {
             context.read<QuizData>().toggleChoiceState(i);
 
             if (quizData.getAnswerCount() == 4) {
-              print(quizData.checkAllAnswer());
+              if (quizData.checkAllAnswer()) {
+                player.play(AssetSource('vfx_correct.mp3'));
+              } else {
+                player.play(AssetSource('vfx_wrong.mp3'));
+                shakeKey.currentState?.shake();
+              }
             }
           },
         ),
