@@ -1,0 +1,37 @@
+[
+  {
+    "text": "Oh|!| |_|_|_|_|,| |Emily|.| |It's| |so| |cool|.| |You| |have| |three| |lines| |max|.",
+    "choices": [
+      "Very long word",
+      "Wrong",
+      "Nice",
+      "to",
+      "meet",
+      "you"
+    ],
+    "solutions": [
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  {
+    "text": "|_|_|_|_| |until| |yesterday|.",
+    "choices": [
+      "I'd",
+      "forgotten",
+      "forget",
+      "about it",
+      "forgot",
+      "I've",
+      "totally"
+    ],
+    "solutions": [
+      0,
+      6,
+      1,
+      3
+    ]
+  }
+]
