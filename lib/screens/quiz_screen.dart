@@ -1,10 +1,9 @@
 import 'dart:convert';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-int _quizNumber = 0;
-List data = [];
+import 'package:tockto_assignment/models/quiz.dart';
 
 Future<List<dynamic>> getJson() async {
   final String response = await rootBundle.loadString('assets/data.json');
@@ -26,7 +25,7 @@ class QuizScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: SizedBox(
             width: 320.0,
-            child: Quiz(),
+            child: QuizCard(),
           ),
         ),
       ),
@@ -34,8 +33,8 @@ class QuizScreen extends StatelessWidget {
   }
 }
 
-class Quiz extends StatelessWidget {
-  const Quiz({
+class QuizCard extends StatelessWidget {
+  const QuizCard({
     super.key,
   });
 
@@ -50,14 +49,16 @@ class Quiz extends StatelessWidget {
           );
         } else {
           try {
-            data = snapshot.data!;
+            List data = snapshot.data!;
 
-            return const Column(
+            Quiz quiz = Quiz(data[0]);
+
+            return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                QuizCard(),
-                SizedBox(height: 48.0),
-                QuizChoice(),
+                QuizQuestion(quiz: quiz),
+                const SizedBox(height: 48.0),
+                QuizChoice(quiz: quiz),
               ],
             );
           } on Exception catch (e) {
@@ -70,15 +71,22 @@ class Quiz extends StatelessWidget {
   }
 }
 
-class QuizCard extends StatelessWidget {
-  const QuizCard({
+class QuizQuestion extends StatefulWidget {
+  final Quiz quiz;
+
+  const QuizQuestion({
     super.key,
+    required this.quiz,
   });
 
   @override
+  State<QuizQuestion> createState() => _QuizQuestionState();
+}
+
+class _QuizQuestionState extends State<QuizQuestion> {
+  @override
   Widget build(BuildContext context) {
-    String question = data[_quizNumber]['text'];
-    List<String> questionWords = question.split('|');
+    List<String> questionWords = widget.quiz.getQuestion().split('|');
 
     List<InlineSpan> list = [];
 
@@ -127,29 +135,49 @@ class QuizCard extends StatelessWidget {
   }
 }
 
-class QuizChoice extends StatelessWidget {
+class QuizChoice extends StatefulWidget {
+  final Quiz quiz;
+
   const QuizChoice({
     super.key,
+    required this.quiz,
   });
 
   @override
+  State<QuizChoice> createState() => _QuizChoiceState();
+}
+
+class _QuizChoiceState extends State<QuizChoice> {
+  @override
   Widget build(BuildContext context) {
-    List choices = data[_quizNumber]['choices'];
+    List choices = widget.quiz.getChoice();
     List<Widget> list = [];
 
+    int i = 0;
     for (String choice in choices) {
+      final index = i;
       list.add(
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              shape: const StadiumBorder(),
-              backgroundColor: const Color(0xffe9e6f3)),
+            shape: const StadiumBorder(),
+            backgroundColor: widget.quiz.getChoicesState()[index]
+                ? const Color(0xff7e64dc)
+                : const Color(0xffe9e6f3),
+          ),
           child: Text(
             choice,
             style: const TextStyle(fontSize: 20.0, color: Colors.deepPurple),
           ),
-          onPressed: () {},
+          onPressed: () {
+            final player = AudioPlayer();
+            player.play(AssetSource('vfx_tap.mp3'));
+            setState(() {
+              widget.quiz.toggleChoiceState(index);
+            });
+          },
         ),
       );
+      i++;
     }
 
     return Wrap(
