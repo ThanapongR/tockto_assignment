@@ -23,4 +23,13 @@ class QuizData extends ChangeNotifier {
   List<String> getChoice() {
     return _quizzes[_quizIndex].getChoice();
   }
+
+  List<bool> getChoicesState() {
+    return _quizzes[_quizIndex].getChoicesState();
+  }
+
+  void toggleChoiceState(int choiceIndex) {
+    _quizzes[_quizIndex].toggleChoiceState(choiceIndex);
+    notifyListeners();
+  }
 }

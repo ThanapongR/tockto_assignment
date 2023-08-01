@@ -4,7 +4,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:tockto_assignment/models/quiz.dart';
 import 'package:tockto_assignment/models/quiz_data.dart';
 
 Future<List<dynamic>> getJson() async {
@@ -136,7 +135,8 @@ class QuizChoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List choices = Provider.of<QuizData>(context).getChoice();
+    QuizData quizData = Provider.of<QuizData>(context);
+    List choices = quizData.getChoice();
     List<Widget> list = [];
 
     int i = 0;
@@ -146,17 +146,17 @@ class QuizChoice extends StatelessWidget {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
-            // backgroundColor: widget.quiz.getChoicesState()[index]
-            //     ? const Color(0xff7e64dc)
-            //     : const Color(0xffe9e6f3),
+            backgroundColor: quizData.getChoicesState()[index]
+                ? const Color(0xff7e64dc)
+                : const Color(0xffe9e6f3),
           ),
           child: Text(
             choice,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20.0,
-              // color: widget.quiz.getChoicesState()[index]
-              //     ? Colors.white
-              //     : Colors.deepPurple,
+              color: quizData.getChoicesState()[index]
+                  ? Colors.white
+                  : Colors.deepPurple,
             ),
 
             // style: const TextStyle(fontSize: 20.0, color: Colors.deepPurple),
@@ -164,9 +164,7 @@ class QuizChoice extends StatelessWidget {
           onPressed: () {
             final player = AudioPlayer();
             player.play(AssetSource('vfx_tap.mp3'));
-            // setState(() {
-            //   widget.quiz.toggleChoiceState(index);
-            // });
+            context.read<QuizData>().toggleChoiceState(index);
           },
         ),
       );
