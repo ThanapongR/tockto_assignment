@@ -20,6 +20,10 @@ class QuizData extends ChangeNotifier {
     return _quizzes[_quizIndex].getQuestion();
   }
 
+  List<int?> getAnswer() {
+    return _quizzes[_quizIndex].getAnswer();
+  }
+
   List<String> getChoice() {
     return _quizzes[_quizIndex].getChoice();
   }

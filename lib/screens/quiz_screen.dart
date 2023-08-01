@@ -78,26 +78,45 @@ class QuizQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> questionWords =
-        Provider.of<QuizData>(context).getQuestion().split('|');
+    QuizData quizData = Provider.of<QuizData>(context);
+    List<String> questionWords = quizData.getQuestion().split('|');
 
     List<InlineSpan> list = [];
+    int i = 0; //Store blank space index
 
     for (String word in questionWords) {
       if (word == '_') {
-        list.add(
-          WidgetSpan(
-            child: Container(
-              margin: const EdgeInsets.only(left: 4.0, right: 4.0),
-              width: 40.0,
-              height: 28.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: const Color(0xffe9e6f3),
+        if (quizData.getAnswer()[i] == null) {
+          list.add(
+            WidgetSpan(
+              child: Container(
+                margin: const EdgeInsets.only(left: 4.0, right: 4.0),
+                width: 40.0,
+                height: 28.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: const Color(0xffe9e6f3),
+                ),
               ),
             ),
-          ),
-        );
+          );
+        } else {
+          list.add(
+            WidgetSpan(
+              child: Container(
+                margin: const EdgeInsets.only(left: 4.0, right: 4.0),
+                width: 40.0,
+                height: 28.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: const Color(0xffe9e6f3),
+                ),
+                child: Text(quizData.getChoice()[quizData.getAnswer()[i] ?? 0]),
+              ),
+            ),
+          );
+        }
+        i++;
       } else {
         list.add(
           TextSpan(

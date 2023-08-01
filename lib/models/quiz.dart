@@ -1,6 +1,6 @@
 class Quiz {
   String _question = '';
-  final List<int?> _questionAnswer = [];
+  final List<int?> _answer = [];
   List<String> _choices = [];
   final List<bool> _choicesState = [];
   List<int> _solutions = [];
@@ -20,7 +20,7 @@ class Quiz {
     }
 
     for (var _ in _solutions) {
-      _questionAnswer.add(null);
+      _answer.add(null);
     }
   }
 
@@ -28,8 +28,8 @@ class Quiz {
     return _question;
   }
 
-  List<int?> getQuestionAnswer() {
-    return _questionAnswer;
+  List<int?> getAnswer() {
+    return _answer;
   }
 
   List<String> getChoice() {
@@ -47,24 +47,23 @@ class Quiz {
   void toggleChoiceState(int choiceIndex) {
     if (_choicesState[choiceIndex]) {
       _choicesState[choiceIndex] = false;
-      for (int i = 0; i < _questionAnswer.length; i++) {
-        if (_questionAnswer[i] == choiceIndex) {
-          _questionAnswer[i] = null;
+      for (int i = 0; i < _answer.length; i++) {
+        if (_answer[i] == choiceIndex) {
+          _answer[i] = null;
           break;
         }
       }
     } else {
-      if (_questionAnswer.contains(null)) {
-        for (int i = 0; i < _questionAnswer.length; i++) {
-          if (_questionAnswer[i] == null) {
-            _questionAnswer[i] = choiceIndex;
+      if (_answer.contains(null)) {
+        for (int i = 0; i < _answer.length; i++) {
+          if (_answer[i] == null) {
+            _answer[i] = choiceIndex;
             break;
           }
         }
-        print('xxx');
         _choicesState[choiceIndex] = true;
       }
     }
-    print(_questionAnswer);
+    print(_answer);
   }
 }
