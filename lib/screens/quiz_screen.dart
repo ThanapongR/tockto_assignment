@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:tockto_assignment/models/quiz.dart';
+import 'package:tockto_assignment/models/quiz_data.dart';
 
 Future<List<dynamic>> getJson() async {
   final String response = await rootBundle.loadString('assets/data.json');
@@ -49,16 +51,15 @@ class QuizCard extends StatelessWidget {
           );
         } else {
           try {
-            List data = snapshot.data!;
+            List<dynamic> data = snapshot.data!;
+            context.read<QuizData>().addQuiz(data);
 
-            Quiz quiz = Quiz(data[0]);
-
-            return Column(
+            return const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                QuizQuestion(quiz: quiz),
-                const SizedBox(height: 48.0),
-                QuizChoice(quiz: quiz),
+                QuizQuestion(),
+                SizedBox(height: 48.0),
+                QuizChoice(),
               ],
             );
           } on Exception catch (e) {
@@ -71,22 +72,15 @@ class QuizCard extends StatelessWidget {
   }
 }
 
-class QuizQuestion extends StatefulWidget {
-  final Quiz quiz;
-
+class QuizQuestion extends StatelessWidget {
   const QuizQuestion({
     super.key,
-    required this.quiz,
   });
 
   @override
-  State<QuizQuestion> createState() => _QuizQuestionState();
-}
-
-class _QuizQuestionState extends State<QuizQuestion> {
-  @override
   Widget build(BuildContext context) {
-    List<String> questionWords = widget.quiz.getQuestion().split('|');
+    List<String> questionWords =
+        Provider.of<QuizData>(context).getQuestion().split('|');
 
     List<InlineSpan> list = [];
 
@@ -135,22 +129,14 @@ class _QuizQuestionState extends State<QuizQuestion> {
   }
 }
 
-class QuizChoice extends StatefulWidget {
-  final Quiz quiz;
-
+class QuizChoice extends StatelessWidget {
   const QuizChoice({
     super.key,
-    required this.quiz,
   });
 
   @override
-  State<QuizChoice> createState() => _QuizChoiceState();
-}
-
-class _QuizChoiceState extends State<QuizChoice> {
-  @override
   Widget build(BuildContext context) {
-    List choices = widget.quiz.getChoice();
+    List choices = Provider.of<QuizData>(context).getChoice();
     List<Widget> list = [];
 
     int i = 0;
@@ -160,20 +146,27 @@ class _QuizChoiceState extends State<QuizChoice> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
-            backgroundColor: widget.quiz.getChoicesState()[index]
-                ? const Color(0xff7e64dc)
-                : const Color(0xffe9e6f3),
+            // backgroundColor: widget.quiz.getChoicesState()[index]
+            //     ? const Color(0xff7e64dc)
+            //     : const Color(0xffe9e6f3),
           ),
           child: Text(
             choice,
-            style: const TextStyle(fontSize: 20.0, color: Colors.deepPurple),
+            style: const TextStyle(
+              fontSize: 20.0,
+              // color: widget.quiz.getChoicesState()[index]
+              //     ? Colors.white
+              //     : Colors.deepPurple,
+            ),
+
+            // style: const TextStyle(fontSize: 20.0, color: Colors.deepPurple),
           ),
           onPressed: () {
             final player = AudioPlayer();
             player.play(AssetSource('vfx_tap.mp3'));
-            setState(() {
-              widget.quiz.toggleChoiceState(index);
-            });
+            // setState(() {
+            //   widget.quiz.toggleChoiceState(index);
+            // });
           },
         ),
       );

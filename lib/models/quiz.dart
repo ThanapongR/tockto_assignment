@@ -5,8 +5,6 @@ class Quiz {
   final List<bool> _choicesState = [];
   List<int> _solutions = [];
 
-  int _answerIndex = 0;
-
   Quiz(Map<String, dynamic> data) {
     _question = data['text'] ?? '';
     _choices =
