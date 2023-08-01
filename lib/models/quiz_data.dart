@@ -7,8 +7,10 @@ class QuizData extends ChangeNotifier {
   int _quizIndex = 0;
 
   void addQuiz(List<dynamic> data) {
-    for (var d in data) {
-      _quizzes.add(Quiz(d));
+    if (!_quizzes.isNotEmpty) {
+      for (var d in data) {
+        _quizzes.add(Quiz(d));
+      }
     }
   }
 
@@ -70,6 +72,17 @@ class QuizData extends ChangeNotifier {
 
   void toggleChoiceState(int choiceIndex) {
     _quizzes[_quizIndex].toggleChoiceState(choiceIndex);
+    notifyListeners();
+  }
+
+  void nextQuiz() {
+    if (++_quizIndex > _quizzes.length - 1) {
+      _quizIndex = 0;
+    }
+  }
+
+  void clearData() {
+    _quizzes[_quizIndex].clearData();
     notifyListeners();
   }
 }

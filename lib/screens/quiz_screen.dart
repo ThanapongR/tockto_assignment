@@ -215,6 +215,10 @@ class QuizChoice extends StatelessWidget {
             if (quizData.getAnswerCount() == 4) {
               if (quizData.checkAllAnswer()) {
                 player.play(AssetSource('vfx_correct.mp3'));
+                quizData.nextQuiz();
+                quizData.clearData();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => QuizScreen()));
               } else {
                 player.play(AssetSource('vfx_wrong.mp3'));
                 shakeKey.currentState?.shake();

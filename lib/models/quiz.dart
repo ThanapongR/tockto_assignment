@@ -1,8 +1,8 @@
 class Quiz {
   String _question = '';
-  final List<int?> _answer = [];
+  List<int?> _answer = [];
   List<String> _choices = [];
-  final List<bool> _choicesState = [];
+  List<bool> _choicesState = [];
   List<int> _solutions = [];
   int _answerCount = 0;
 
@@ -14,12 +14,12 @@ class Quiz {
         .map((item) => int.tryParse(item.toString()) ?? 0)
         .toList();
 
-    for (var _ in _choices) {
-      _choicesState.add(false);
-    }
-
     for (var _ in _solutions) {
       _answer.add(null);
+    }
+
+    for (var _ in _choices) {
+      _choicesState.add(false);
     }
   }
 
@@ -69,5 +69,17 @@ class Quiz {
         _answerCount++;
       }
     }
+  }
+
+  void clearData() {
+    _answer = [];
+    _choicesState = [];
+    for (var _ in _solutions) {
+      _answer.add(null);
+    }
+    for (var _ in _choices) {
+      _choicesState.add(false);
+    }
+    _answerCount = 0;
   }
 }
