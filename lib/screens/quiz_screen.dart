@@ -7,12 +7,6 @@ import 'package:flutter_shakemywidget/flutter_shakemywidget.dart';
 import 'package:provider/provider.dart';
 import 'package:tockto_assignment/models/quiz_data.dart';
 
-Future<List<dynamic>> getJson() async {
-  final String response = await rootBundle.loadString('assets/data.json');
-  final data = json.decode(response);
-  return data;
-}
-
 class QuizScreen extends StatelessWidget {
   const QuizScreen({Key? key}) : super(key: key);
 
@@ -42,12 +36,18 @@ class QuizCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<List<dynamic>> getJson() async {
+      final String response = await rootBundle.loadString('assets/data.json');
+      final data = json.decode(response);
+      return data;
+    }
+
     return FutureBuilder(
       future: getJson(),
       builder: (context, snapshot) {
         if (snapshot.data == null || snapshot.hasData == false) {
           return const Center(
-            child: Text("Opp something error!"),
+            child: Text("Opp, something error!"),
           );
         } else {
           try {
@@ -67,9 +67,7 @@ class QuizCard extends StatelessWidget {
                 children: [
                   const QuizQuestion(),
                   const SizedBox(height: 48.0),
-                  QuizChoice(
-                    shakeKey: shakeKey,
-                  ),
+                  QuizChoice(shakeKey: shakeKey),
                 ],
               ),
             );
@@ -91,7 +89,7 @@ class QuizQuestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     QuizData quizData = Provider.of<QuizData>(context);
-    List<String> questionWords = quizData.getQuestion();
+    List<String> questionWords = quizData.getQuestionWords();
 
     List<InlineSpan> list = [];
     int bsIndex = 0; //Store blank space index
@@ -186,7 +184,7 @@ class QuizChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     QuizData quizData = Provider.of<QuizData>(context);
-    List choices = quizData.getChoice();
+    List choices = quizData.getChoices();
     List<Widget> list = [];
 
     for (int i = 0; i < choices.length; i++) {
@@ -217,8 +215,10 @@ class QuizChoice extends StatelessWidget {
                 player.play(AssetSource('vfx_correct.mp3'));
                 quizData.nextQuiz();
                 quizData.clearData();
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => QuizScreen()));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const QuizScreen()));
               } else {
                 player.play(AssetSource('vfx_wrong.mp3'));
                 shakeKey.currentState?.shake();
