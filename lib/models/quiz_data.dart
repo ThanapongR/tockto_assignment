@@ -16,16 +16,52 @@ class QuizData extends ChangeNotifier {
     return _quizIndex;
   }
 
-  String getQuestion() {
-    return _quizzes[_quizIndex].getQuestion();
+  List<String> getQuestion() {
+    return _quizzes[_quizIndex].getQuestion().split('|');
   }
 
-  List<int?> getAnswer() {
-    return _quizzes[_quizIndex].getAnswer();
+  int? getAnswer(int index) {
+    return _quizzes[_quizIndex].getAnswer()[index];
   }
 
   List<String> getChoice() {
     return _quizzes[_quizIndex].getChoice();
+  }
+
+  int getSolution(int index) {
+    return _quizzes[_quizIndex].getSolution()[index];
+  }
+
+  bool checkAnswer(int index) {
+    if (getAnswer(index) == getSolution(index)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool checkAllAnswer() {
+    List<int> solution = _quizzes[_quizIndex].getSolution();
+    for (int index = 0; index < solution.length; index++) {
+      if (getAnswer(index) != getSolution(index)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  int getAnswerCount() {
+    return _quizzes[_quizIndex].getAnswerCount();
+  }
+
+  //Get answer to show in blank space
+  String? getAnswerByIndex(int index) {
+    int? answer = getAnswer(index);
+    if (answer != null) {
+      return getChoice()[answer];
+    } else {
+      return null;
+    }
   }
 
   List<bool> getChoicesState() {

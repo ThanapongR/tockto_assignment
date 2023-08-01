@@ -4,16 +4,15 @@ class Quiz {
   List<String> _choices = [];
   final List<bool> _choicesState = [];
   List<int> _solutions = [];
+  int _answerCount = 0;
 
   Quiz(Map<String, dynamic> data) {
     _question = data['text'] ?? '';
     _choices =
-        List.from(data['choices'])?.map((item) => item.toString()).toList() ??
-            [];
+        List.from(data['choices']).map((item) => item.toString()).toList();
     _solutions = List.from(data['solutions'])
-            ?.map((item) => int.tryParse(item.toString()) ?? 0)
-            .toList() ??
-        [];
+        .map((item) => int.tryParse(item.toString()) ?? 0)
+        .toList();
 
     for (var _ in _choices) {
       _choicesState.add(false);
@@ -44,6 +43,10 @@ class Quiz {
     return _solutions;
   }
 
+  int getAnswerCount() {
+    return _answerCount;
+  }
+
   void toggleChoiceState(int choiceIndex) {
     if (_choicesState[choiceIndex]) {
       _choicesState[choiceIndex] = false;
@@ -53,6 +56,7 @@ class Quiz {
           break;
         }
       }
+      _answerCount--;
     } else {
       if (_answer.contains(null)) {
         for (int i = 0; i < _answer.length; i++) {
@@ -62,8 +66,8 @@ class Quiz {
           }
         }
         _choicesState[choiceIndex] = true;
+        _answerCount++;
       }
     }
-    print(_answer);
   }
 }

@@ -61,7 +61,7 @@ class QuizCard extends StatelessWidget {
                 QuizChoice(),
               ],
             );
-          } on Exception catch (e) {
+          } on Exception catch (_) {
             // print(e);
             return const Center(child: Text('err'));
           }
@@ -79,14 +79,14 @@ class QuizQuestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     QuizData quizData = Provider.of<QuizData>(context);
-    List<String> questionWords = quizData.getQuestion().split('|');
+    List<String> questionWords = quizData.getQuestion();
 
     List<InlineSpan> list = [];
-    int i = 0; //Store blank space index
+    int bsIndex = 0; //Store blank space index
 
     for (String word in questionWords) {
       if (word == '_') {
-        if (quizData.getAnswer()[i] == null) {
+        if (quizData.getAnswerByIndex(bsIndex) == null) {
           list.add(
             WidgetSpan(
               child: Container(
@@ -105,18 +105,34 @@ class QuizQuestion extends StatelessWidget {
             WidgetSpan(
               child: Container(
                 margin: const EdgeInsets.only(left: 4.0, right: 4.0),
-                width: 40.0,
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 height: 28.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: const Color(0xffe9e6f3),
+                  color: ((() {
+                    if (quizData.getAnswerCount() != 4) {
+                      return const Color(0xffe9e6f3);
+                    } else {
+                      if (quizData.checkAnswer(bsIndex)) {
+                        return const Color(0xffb5ffaf);
+                      } else {
+                        return const Color(0xffffccd2);
+                      }
+                    }
+                  })()),
                 ),
-                child: Text(quizData.getChoice()[quizData.getAnswer()[i] ?? 0]),
+                child: Text(
+                  quizData.getAnswerByIndex(bsIndex)!,
+                  style: const TextStyle(
+                    fontSize: 22.0,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
           );
         }
-        i++;
+        bsIndex++;
       } else {
         list.add(
           TextSpan(
@@ -158,36 +174,35 @@ class QuizChoice extends StatelessWidget {
     List choices = quizData.getChoice();
     List<Widget> list = [];
 
-    int i = 0;
-    for (String choice in choices) {
-      final index = i;
+    for (int i = 0; i < choices.length; i++) {
       list.add(
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
-            backgroundColor: quizData.getChoicesState()[index]
+            backgroundColor: quizData.getChoicesState()[i]
                 ? const Color(0xff7e64dc)
                 : const Color(0xffe9e6f3),
           ),
           child: Text(
-            choice,
+            choices[i],
             style: TextStyle(
               fontSize: 20.0,
-              color: quizData.getChoicesState()[index]
+              color: quizData.getChoicesState()[i]
                   ? Colors.white
                   : Colors.deepPurple,
             ),
-
-            // style: const TextStyle(fontSize: 20.0, color: Colors.deepPurple),
           ),
           onPressed: () {
             final player = AudioPlayer();
             player.play(AssetSource('vfx_tap.mp3'));
-            context.read<QuizData>().toggleChoiceState(index);
+            context.read<QuizData>().toggleChoiceState(i);
+
+            if (quizData.getAnswerCount() == 4) {
+              print(quizData.checkAllAnswer());
+            }
           },
         ),
       );
-      i++;
     }
 
     return Wrap(
